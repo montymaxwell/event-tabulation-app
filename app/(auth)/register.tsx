@@ -9,6 +9,7 @@ import Button from '@/components/Button';
 import { supabase } from '@/lib/supabase';
 import { ClientResponse } from '@/lib/models';
 import { useUser } from '@/lib/store';
+import { set_client_account } from '@/lib/actions/client_account';
 
 function AuthRegister() {
   const user = useUser();
@@ -25,6 +26,7 @@ function AuthRegister() {
 
   useEffect(() => {
     if (user.value.id.length > 0) {
+      set_client_account();
       router.replace('/(admin)/screens/');
     }
   }, [user.value.id]);
@@ -86,25 +88,22 @@ function AuthRegister() {
       return;
     }
 
-    // if (data.user && data.user.email) {
-    //   const profile = await supabase.from('profiles').select('username').eq('id', data.user.id);
+    if (data.user && data.user.email) {
+      const client = await supabase.from('clients').select('username').eq('user', data.user.id);
 
-    //   if (profile.error) {
-    //     setLoading(false);
-    //     console.log(profile.error);
-    //     user.write({ id: data.user.id, email: data.user.email, username: null });
-    //     return;
-    //   }
+      if (client.error) {
+        console.log(client.error);
+        user.write({ id: data.user.id, email: data.user.email, username: null });
+        return;
+      }
 
-    //   if (profile.data) {
-    //     const { username } = profile.data[0];
-    //     if (username) {
-    //       user.write({ id: data.user.id, email: data.user.email, username });
-    //     } else {
-    //       user.write({ id: data.user.id, email: data.user.email, username: null });
-    //     }
-    //   }
-    // }
+      if (client.data.length > 0) {
+        user.write({ id: data.user.id, email: data.user.email, username: client.data[0].username });
+        return;
+      }
+
+      user.write({ id: data.user.id, email: data.user.email, username: null });
+    }
 
     setResponse({ status: 'success', message: '[Auth]: Successfully Registered!' });
     setLoading(false);

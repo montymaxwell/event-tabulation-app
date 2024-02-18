@@ -28,6 +28,7 @@ function EventForm() {
   }, []);
 
   const Submit = async () => {
+    const owner = user.getID();
     if (id === 'create') {
       const form = event.value;
 
@@ -53,7 +54,7 @@ function EventForm() {
         }
 
         const { error, data } = await supabase.from('events').insert({
-          owner: user.value.id,
+          owner: owner,
           name: form.name,
           location: form.location,
           description: form.description,
@@ -62,29 +63,32 @@ function EventForm() {
         });
 
         if (error) {
-          console.log(error);
+          console.log('event create: ', error);
           return;
         }
 
         event.reset();
-        router.replace('/(admin)/screens/');
+        router.back();
       }
 
       return;
-    }
+    } else {
+      const { id, ...eventdata } = event.value;
+      const { error, data } = await supabase
+        .from('events')
+        .update(eventdata)
+        .eq('owner', owner)
+        .eq('id', event.value.id);
+      if (error) {
+        console.log(error);
+        return;
+      }
 
-    const { id, ...eventdata } = event.value;
-    const { error, data } = await supabase
-      .from('events')
-      .update(eventdata)
-      .eq('id', event.value.id);
-    if (error) {
-      console.log(error);
+      event.reset();
+      router.back();
+      router.back();
       return;
     }
-
-    event.reset();
-    router.replace('/(admin)/screens/');
   };
 
   return (

@@ -1,4 +1,5 @@
 import { useUser } from '@/lib/store';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Slot, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
@@ -30,22 +31,13 @@ function AdminLayout() {
         }}
         source={require('assets/images/app-bg.png')}
       />
-      <View className="w-full flex flex-row justify-between items-center p-5">
-        <Pressable className="w-auto p-1 rounded-lg bg-white/25">
-          <Image
-            width={40}
-            height={40}
-            style={{
-              width: 40,
-              height: 40,
-            }}
-            source={require('assets/images/advent-md-white.png')}
-          />
-        </Pressable>
+      <View className="w-full flex flex-row flex-wrap p-5">
         <Pressable
-          onPress={UserIcon}
-          className="w-auto px-2 py-3 rounded-lg bg-white/25 active:bg-white/50">
-          <Text className="text-white">{user.value.email.split('@')[0]}</Text>
+          onPress={() => {
+            router.back();
+          }}
+          className="w-auto p-2.5 rounded-lg bg-white/20 active:bg-white/40">
+          <MaterialIcons name="arrow-back-ios-new" size={18} color={'#fff'} />
         </Pressable>
       </View>
       <View className="flex-auto bg-white">

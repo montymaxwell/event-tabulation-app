@@ -3,16 +3,22 @@ import Button from '@/components/Button';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useClient, useUser } from '@/lib/store';
+import { useUser } from '@/lib/store';
 import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '@/lib/supabase';
+import { set_client_account } from '@/lib/actions/client_account';
 
 function Index() {
   const router = useRouter();
   const user = useUser();
-  const client = useClient();
 
   useEffect(() => {
-    client.init();
+    // AsyncStorage.clear();
+    user.init();
+    set_client_account();
+
+    // console.log(user.value);
   }, []);
 
   const JudgeButton = () => {

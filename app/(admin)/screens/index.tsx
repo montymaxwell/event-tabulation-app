@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
 function AdminHomeScreen() {
-  const userID = useUser((state) => state.value.id);
+  const userID = useUser((state) => state.getID());
   const router = useRouter();
   const event = useEventForm();
 

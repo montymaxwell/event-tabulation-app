@@ -8,11 +8,23 @@ function UserScreensLayout() {
   const router = useRouter();
   const user = useUser();
 
+  const [name, setName] = useState('User');
+
   const UserIcon = () => {
     if (user.value.id.length > 0) {
       user.reset();
     }
   };
+
+  useEffect(() => {
+    if (user.value.username) {
+      setName(user.value.username);
+    } else if (user.value.email.length > 0) {
+      setName(user.value.email.split('@')[0]);
+    } else {
+      setName('User');
+    }
+  }, [user.value]);
 
   // useEffect(() => {
   //   if (user.value.id.length === 0) {
@@ -45,11 +57,14 @@ function UserScreensLayout() {
         <Pressable
           onPress={UserIcon}
           className="w-auto px-2 py-3 rounded-lg bg-white/25 active:bg-white/50">
-          <Text className="text-white">{user.value.email.split('@')[0]}</Text>
+          <Text className="text-white">{name}</Text>
         </Pressable>
       </View>
       <View className="flex-auto bg-white">
         <Slot />
+      </View>
+      <View className="w-full p-3">
+        <Text>{user.value.client}</Text>
       </View>
     </SafeAreaView>
   );

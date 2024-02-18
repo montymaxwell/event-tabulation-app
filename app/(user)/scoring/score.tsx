@@ -49,7 +49,7 @@ function Scorable(props: Criteria & { id: string; criteria: number; candidate: n
   useEffect(() => {
     if (current === null) return;
 
-    if (score.value.id === event.value.id) {
+    if (event.value.id.length > 0) {
       const candidates = score.value.candidates;
 
       if (candidates[props.candidate] === undefined) {
@@ -83,20 +83,21 @@ function Scorable(props: Criteria & { id: string; criteria: number; candidate: n
             helperText={state !== null ? state : ''}
             keyboardType="number-pad"
             onChangeText={(text) => {
-              setCurrent(Number(text));
+              const num = Number(text);
+              setCurrent(num);
 
-              if (Number(text) > props.maxScore) {
+              if (num > props.maxScore) {
                 setState(`The score limit is ${props.maxScore}`);
-              } else if (text.length > 0 && Number(text) < props.minScore) {
+              } else if (num < props.minScore) {
                 setState(`The minmum score is ${props.minScore}`);
               } else {
                 setState(null);
                 // ScoreHandler(Number(text));
               }
 
-              if (Number(text) < props.minScore) {
+              if (num < props.minScore) {
                 setCurrent(props.minScore);
-              } else if (Number(text) > props.maxScore) {
+              } else if (num > props.maxScore) {
                 setCurrent(props.maxScore);
               }
             }}

@@ -5,12 +5,11 @@ import { View, Image, Pressable, Text, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect } from 'react';
 import { Candidate } from '@/lib/models';
-import { useClient, useEventForm, useScore, useUser } from '@/lib/store';
+import { useEventForm, useScore, useUser } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 
 function JudgeEvent() {
   const user = useUser();
-  const client = useClient();
   const score = useScore();
   const router = useRouter();
   const event = useEventForm();
@@ -30,69 +29,44 @@ function JudgeEvent() {
 
           event.write(data[0]);
 
-          if (!user.check()) {
-            const { error, data } = await supabase
-              .from('scores')
-              .select('*')
-              .eq('id', id)
-              .eq('owner', client.id);
+          const owner = user.getID();
+          const scores = await supabase
+            .from('scores')
+            .select('*')
+            .eq('event', id)
+            .eq('owner', owner);
 
-            if (error) {
-              console.log(error);
-              return;
-            }
-
-            if (data.length > 0) {
-              score.write({
-                id: data[0].id,
-                tempID: client.id!,
-                userID: null,
-                candidates: data[0].candidates,
-              });
-            } else {
-              score.write({
-                id: event.value.id,
-                tempID: client.id!,
-                userID: null,
-                candidates: [],
-              });
-            }
-
+          if (scores.error) {
+            console.log(error);
+            score.write({
+              owner,
+              id: event.value.id,
+              candidates: [],
+            });
             return;
+          }
+
+          // console.log(JSON.stringify(scores.data, null, 2));
+
+          if (scores.data.length > 0) {
+            score.write({
+              owner,
+              id: data[0].id,
+              candidates: scores.data[0].candidates,
+            });
           } else {
-            const { error, data } = await supabase
-              .from('scores')
-              .select('*')
-              .eq('id', id)
-              .eq('owner', user.value.id);
-
-            if (error) {
-              console.log(error);
-              return;
-            }
-
-            if (data.length > 0) {
-              score.write({
-                id: data[0].id,
-                tempID: '',
-                userID: user.value.id,
-                candidates: data[0].candidates,
-              });
-            } else {
-              score.write({
-                id: event.value.id,
-                tempID: '',
-                userID: user.value.id,
-                candidates: [],
-              });
-            }
+            score.write({
+              owner,
+              id: event.value.id,
+              candidates: [],
+            });
           }
         });
     }
   }, []);
 
   useEffect(() => {
-    const userid = user.value.id;
+    const userid = user.getID();
     const owner = event.value.owner;
     if (userid.length > 0 && owner.length > 0 && userid === owner) {
       router.replace({ pathname: '/(admin)/dashboard/[event]', params: { event: id } });

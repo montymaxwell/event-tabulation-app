@@ -22,8 +22,10 @@ type ZustandStoreArray<T> = {
 };
 
 type UserStore = {
-  value: User;
+  value: User & { client: string | null };
+  init: () => void;
   check: () => boolean;
+  getID: () => string;
   write: (data: User) => void;
   reset: () => void;
 }
@@ -33,10 +35,9 @@ export type ScorableEvent = {
   criterias: Array<number> // using criteria as indexes
 }
 
-type Score = {
+export type Score = {
   id: string,
-  tempID: string,
-  userID: string | null,
+  owner: string,
   candidates: Array<ScorableEvent> // using candidates as indexes
 }
 
@@ -54,8 +55,29 @@ export const useUser = create<UserStore>()(
     (set, get) => ({
       value: {
         id: '',
+        client: null,
         email: '',
         username: null,
+      },
+      init: () => {
+        if (get().value.client === null) {
+          supabase.from('clients').insert({ device: { ...Device } }).select().then(({ error, data }) => {
+            if (error) {
+              console.log(error);
+              return;
+            }
+  
+            set((prev) => ({ value: { ...prev.value, client: data[0].id } }));
+          })
+        }
+      },
+      getID: () => {
+        if (get().value.email.length > 0) {
+          return get().value.id;
+        }
+        else {
+          return get().value.client!;
+        }
       },
       check: () => {
         if (get().value.email.length > 0 && get().value.id.length > 0) {
@@ -65,14 +87,15 @@ export const useUser = create<UserStore>()(
         return false;
       },
       write: (data) => {
-        set(() => ({ value: { ...data } }));
+        set((prev) => ({ value: { client: prev.value.client, ...data } }));
       },
       reset: () => {
-        set(() => ({ 
+        set((prev) => ({ 
           value: {
             id: '',
             email: '',
             username: null,
+            client: prev.value.client,
           }
         }));
       },
@@ -84,30 +107,30 @@ export const useUser = create<UserStore>()(
   )
 );
 
-type ClientStore = {
-  id: string | null,
-  init: () => void
-}
+// type ClientStore = {
+//   id: string | null,
+//   init: () => void
+// }
 
-export const useClient = create<ClientStore>()(
-  persist((set, get) => ({
-    id: null,
-    init: () => {
-      const id = get().id;
-      if (id === null) {
-        supabase.from('client').insert({ device_name: Device.brand }).select('*').then(({ error, data }) => {
-          if (error) {
-            console.log(error);
-            return;
-          }
+// export const useClient = create<ClientStore>()(
+//   persist((set, get) => ({
+//     id: null,
+//     init: () => {
+//       const id = get().id;
+//       if (id === null) {
+//         supabase.from('client').insert({ device_name: Device.brand }).select('*').then(({ error, data }) => {
+//           if (error) {
+//             console.log(error);
+//             return;
+//           }
 
-          set(() => ({ id: data[0].id }));
-        })
-      }
-    }
+//           set(() => ({ id: data[0].id }));
+//         })
+//       }
+//     }
 
-  }), { name: 'client', storage: createJSONStorage(() => AsyncStorage) })
-)
+//   }), { name: 'client', storage: createJSONStorage(() => AsyncStorage) })
+// )
 
 export const useEventForm = create<ZustandStore<EventData> & { append: (data: Partial<EventData>) => void }>((set) => ({
     value: {
@@ -144,8 +167,7 @@ export const useScore = create<ScoreList>()(
   persist((set, get) => ({
     value: {
       id: '',
-      tempID: '',
-      userID: null,
+      owner: '',
       candidates: []
     },
     write: (data) => {
@@ -169,8 +191,7 @@ export const useScore = create<ScoreList>()(
       set({
         value: {
           id: '',
-          tempID: '',
-          userID: null,
+          owner: '',
           candidates: []
         }
       })

@@ -66,7 +66,7 @@ function EventForm() {
       }
 
       event.reset();
-      router.replace('/(admin)/');
+      router.replace('/(admin)/screens/');
     }
   };
 

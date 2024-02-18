@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 
 function UserHomeScreen() {
   const router = useRouter();
@@ -14,36 +14,14 @@ function UserHomeScreen() {
   const userID = useUser((state) => state.value.id);
   const [events, setEvents] = useState<Array<EventData>>([]);
 
-  // useEffect(() => {
-  //   if (!user.check()) {
+  const getEvents = () => {
+    event.reset();
 
-  //   }
-
-  // }, [])
-
-  useFocusEffect(
-    useCallback(() => {
-      event.reset();
-
-      if (userID.length > 0) {
-        supabase
-          .from('events')
-          .select('*')
-          .neq('owner', userID)
-          .then(({ error, data }) => {
-            if (error) {
-              console.log(error);
-              return;
-            }
-
-            setEvents(data);
-          });
-        return;
-      }
-
+    if (userID.length > 0) {
       supabase
         .from('events')
         .select('*')
+        .neq('owner', userID)
         .then(({ error, data }) => {
           if (error) {
             console.log(error);
@@ -52,8 +30,35 @@ function UserHomeScreen() {
 
           setEvents(data);
         });
+      return;
+    }
+
+    supabase
+      .from('events')
+      .select('*')
+      .then(({ error, data }) => {
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        setEvents(data);
+      });
+  };
+
+  useEffect(() => {
+    getEvents();
+  }, [user.value]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getEvents();
     }, [])
   );
+
+  const JoinRoom = async () => {
+    const room = supabase.channel(event.value.id);
+  };
 
   return (
     <View className="flex-auto p-5">
@@ -73,6 +78,7 @@ function UserHomeScreen() {
               label="Judge"
               onPress={() => {
                 router.push({ pathname: '/(user)/event/[id]', params: { id: item.id } });
+                JoinRoom().then();
               }}
               icon={<Ionicons name="enter" size={16} color={'#fff'} />}
             />

@@ -1,6 +1,7 @@
 import Alert from '@/components/Alert';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
+import { set_client_account } from '@/lib/actions/client_account';
 import { ClientResponse } from '@/lib/models';
 import { useUser } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
@@ -20,6 +21,7 @@ function AuthLogin() {
 
   useEffect(() => {
     if (user.value.id.length > 0) {
+      set_client_account();
       router.replace('/(admin)/screens/');
     }
   }, [user.value.id]);
@@ -44,11 +46,12 @@ function AuthLogin() {
     if (error) {
       setLoading(false);
       console.log(error);
+      setResponse({ status: 'error', message: `[AuthAPI]: ${error.message}` });
       return;
     }
 
     if (data.user && data.user.email) {
-      const profile = await supabase.from('profiles').select('username').eq('id', data.user.id);
+      const profile = await supabase.from('clients').select('username').eq('id', data.user.id);
 
       if (profile.error) {
         setLoading(false);

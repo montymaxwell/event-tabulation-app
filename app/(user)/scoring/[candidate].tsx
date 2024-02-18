@@ -22,69 +22,80 @@ function CandidateScoring() {
   const ScoringHandler = async () => {
     // supabase
     //   .from('scores')
-    //   .select('*')
-    //   .eq('id', id)
-    //   .then(async (find) => {
-    //     if (find.error) {
-    //       console.log('search: ', find.error);
+    //   .insert({
+    //     event: event.value.id,
+    //     owner: score.value.owner,
+    //     candidates: score.value.candidates,
+    //   })
+    //   .select()
+    //   .then(async (create) => {
+    //     if (create.error) {
+    //       console.log('create: ', create.error);
+    //       if (create.error.code === '23505') {
+    //         const { error, data } = await supabase
+    //           .from('scores')
+    //           .update({ candidates: score.value.candidates })
+    //           .eq('event', event.value.id)
+    //           .eq('owner', score.value.owner)
+    //           .select();
+    //         if (error) {
+    //           console.log('update: ', error);
+    //           return;
+    //         }
+
+    //         score.append({ candidates: data[0].candidates });
+    //       }
     //       return;
     //     }
-    //     console.log(find.data);
-    //     if (find.data.length > 0) {
-    //       const { error, data } = await supabase
-    //         .from('scores')
-    //         .update({ candidates: score.value.candidates })
-    //         .eq('id', id)
-    //         .select();
-    //       if (error) {
-    //         console.log('update: ', error);
-    //         return;
-    //       }
-    //       score.append({ candidates: data[0].candidates });
-    //     } else {
-    //       const { error, data } = await supabase
-    //         .from('scores')
-    //         .insert({
-    //           id: score.value.id,
-    //           owner: score.value.userID !== null ? score.value.userID : score.value.tempID,
-    //           candidates: score.value.candidates,
-    //         })
-    //         .select();
-    //       if (error) {
-    //         console.log('create: ', error);
-    //         return;
-    //       }
-    //       score.append({ candidates: data[0].candidates });
-    //     }
+
+    //     score.append({ candidates: create.data[0].candidates });
     //   });
 
     supabase
       .from('scores')
-      .insert({
-        id: event.value.id,
-        owner: score.value.userID !== null ? score.value.userID : score.value.tempID,
-        candidates: score.value.candidates,
-      })
-      .select()
-      .then(async (create) => {
-        if (create.error) {
-          console.log('create: ', create.error);
-          if (create.error.code === '23505') {
-            const { error, data } = await supabase
-              .from('scores')
-              .update({ candidates: score.value.candidates })
-              .eq('id', event.value.id)
-              .select();
-            if (error) {
-              console.log('update: ', error);
-              return;
-            }
-            score.append({ candidates: data[0].candidates });
-          }
+      .select('*')
+      .eq('event', event.value.id)
+      .eq('owner', score.value.owner)
+      .then(async (existing) => {
+        if (existing.error) {
+          console.log('Scores Error: ', existing.error);
           return;
         }
-        score.append({ candidates: create.data[0].candidates });
+
+        if (existing.data.length > 0) {
+          const update = await supabase
+            .from('scores')
+            .update({ candidates: score.value.candidates })
+            .eq('event', event.value.id)
+            .eq('owner', score.value.owner)
+            .select();
+
+          if (update.error) {
+            console.log('Scores Update Error: ', update.error);
+            return;
+          }
+
+          score.append({ candidates: update.data[0].candidates });
+        } else {
+          const create = await supabase
+            .from('scores')
+            .insert({
+              event: event.value.id,
+              owner: score.value.owner,
+              candidates: score.value.candidates,
+            })
+            .select();
+
+          if (create.error) {
+            console.log('Create Error: ', create.error);
+            return;
+          }
+
+          score.append({ candidates: create.data[0].candidates });
+        }
       });
+
+    router.back();
   };
 
   return (
@@ -123,24 +134,6 @@ function CandidateScoring() {
             <Text className="text-lg">{candidate.name}</Text>
           </View>
         </View>
-        {/* <FlatList
-          className="w-full h-full"
-          data={JSON.parse(event.value.criteriaList as any) as Array<Criteria>}
-          renderItem={({ item, index }) => (
-            <View className="w-full p-1.5 my-2 flex flex-row flex-wrap items-center rounded-lg bg-slate-100/70">
-              <View className="items-center p-3.5 border-r border-white">
-                <Text className="text-xs text-slate-500">Max</Text>
-                <Text className="text-lg font-bold text-indigo-600">{item.maxScore}</Text>
-              </View>
-              <View className="flex-auto mx-3.5">
-                <Text className="my-1">{item.name}</Text>
-                <View className="w-full my-1">
-                  <Input />
-                </View>
-              </View>
-            </View>
-          )}
-        /> */}
 
         <ScrollView className="flex-auto">
           {data.map((item, i) => (
