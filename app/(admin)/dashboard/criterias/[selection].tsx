@@ -130,7 +130,9 @@ function CriteriaSelection() {
           let total = 0;
 
           return (
-            <View className="w-full p-5 my-2 rounded-lg border border-slate-200 bg-slate-100/60">
+            <View
+              key={index}
+              className="w-full p-5 my-2 rounded-lg border border-slate-200 bg-slate-100/60">
               <View className="flex-auto">
                 <Text className="text-sm text-slate-500">Candidate</Text>
                 <Text className="text-xl font-bold text-slate-600">{item.candidate}</Text>

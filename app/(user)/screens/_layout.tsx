@@ -63,9 +63,6 @@ function UserScreensLayout() {
       <View className="flex-auto bg-white">
         <Slot />
       </View>
-      <View className="w-full p-3">
-        <Text>{user.value.client}</Text>
-      </View>
     </SafeAreaView>
   );
 }

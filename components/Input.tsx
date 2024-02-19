@@ -83,7 +83,9 @@ function Input(props: InputProps) {
           keyboardType={props.keyboardType}
           multiline={props.multiline}
           numberOfLines={props.numberOfLines}
-          style={{ textAlignVertical: 'top' }}
+          style={{
+            textAlignVertical: 'top',
+          }}
           secureTextEntry={props.securedTextEntry}
           className="flex-auto text-lg my-1.5 mx-1"
           onFocus={() => {

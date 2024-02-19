@@ -22,6 +22,7 @@ function UserHomeScreen() {
         .from('events')
         .select('*')
         .neq('owner', userID)
+        .eq('marked', false)
         .then(({ error, data }) => {
           if (error) {
             console.log(error);
@@ -36,6 +37,7 @@ function UserHomeScreen() {
     supabase
       .from('events')
       .select('*')
+      .eq('marked', false)
       .then(({ error, data }) => {
         if (error) {
           console.log(error);

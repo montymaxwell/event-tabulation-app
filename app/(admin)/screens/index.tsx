@@ -23,6 +23,7 @@ function AdminHomeScreen() {
           .from('events')
           .select('*')
           .eq('owner', userID)
+          .eq('marked', false)
           .then(({ error, data }) => {
             if (error) {
               console.log(error);

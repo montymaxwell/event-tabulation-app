@@ -2,15 +2,18 @@ import Button from '@/components/Button';
 import { Candidate } from '@/lib/models';
 import { useEventForm } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { View, Image, Text, FlatList, Pressable } from 'react-native';
+import { View, Image, Text, FlatList, Pressable, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Criteria from './criterias';
+import { useState } from 'react';
 
 function EventDashboard() {
   const event = useEventForm();
   const router = useRouter();
+
+  const [confirmModal, setConfirmModal] = useState<boolean>(false);
 
   // return (
   //   <View className="flex-1 p-5">
@@ -100,14 +103,84 @@ function EventDashboard() {
     supabase.removeChannel(room);
   };
 
+  const remove = () => {
+    console.log(event.value.id);
+
+    supabase
+      .from('events')
+      .update({ marked: true })
+      .eq('id', event.value.id)
+      .then(({ error, data }) => {
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        router.back();
+      });
+  };
+
   return (
     <View className="flex-1 p-5">
+      <Modal transparent={true} visible={confirmModal}>
+        <View className="w-full h-full flex justify-center items-center p-5 bg-black/70" style={{}}>
+          <View className="w-full rounded-lg bg-white">
+            <View className="w-full p-1 flex flex-row flex-wrap items-center justify-between">
+              <Text className="text-lg p-2 text-slate-500">Delete Critera</Text>
+              <Pressable
+                onPress={() => setConfirmModal(false)}
+                className="w-auto p-2 rounded-lg active:bg-slate-100">
+                <AntDesign name="close" size={18} color="#94a3b8" />
+              </Pressable>
+            </View>
+            <View className="w-full p-5 my-2 border-y border-slate-200">
+              {/* {itemIndex !== null ? (
+                <Text>Are you sure you want to delete critera {list.at(itemIndex)!.name}?</Text>
+              ) : (
+                <></>
+              )} */}
+              <Text>Are you sure you want to delete event?</Text>
+            </View>
+            <View className="w-full flex flex-row flex-wrap">
+              <Pressable
+                onPress={() => setConfirmModal(false)}
+                className="flex-auto p-3 rounded-l-lg active:bg-slate-100/80">
+                <Text className="w-full text-lg text-center text-red-500">Cancel</Text>
+              </Pressable>
+              {/* <View className="border-r border-slate-300"></View> */}
+              <Pressable
+                onPress={remove}
+                className="flex-auto p-3 rounded-r-lg active:bg-slate-100/80">
+                <Text className="w-full text-lg text-center text-green-500">Confirm</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
       {/* <View className="flex-auto"></View> */}
       {/* <View className="w-full flex flex-row flex-wrap justify-between">
         <Button onPress={StopEvent} label="End Event" />
         <Button onPress={EventRoom} label="Start Event" />
       </View> */}
       <Criteria />
+      <View className="w-full flex flex-row flex-wrap">
+        <Button
+          onPress={() => {
+            setConfirmModal(true);
+          }}
+          label="Delete"
+          color="red"
+        />
+        <View className="flex-auto ml-2">
+          <Button
+            onPress={() => {
+              router.push({ pathname: '/(admin)/event/[id]', params: { id: event.value.id } });
+            }}
+            label="Edit"
+            fullsize
+          />
+        </View>
+      </View>
     </View>
   );
 }
