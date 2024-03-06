@@ -70,6 +70,9 @@ function CandidateForm() {
         </Pressable>
       </View>
       <View className="flex-auto p-5 items-center bg-white">
+        <View className="w-full mb-5">
+          <Text className="text-xl font-bold text-slate-600">Candidate Information</Text>
+        </View>
         <ScrollView className="w-full h-full">
           <View className="w-full h-full items-center">
             <Pressable

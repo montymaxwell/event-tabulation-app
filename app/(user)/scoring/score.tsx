@@ -4,7 +4,14 @@ import { useEventForm, useScore } from '@/lib/store';
 import { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 
-function Scorable(props: Criteria & { id: string; criteria: number; candidate: number }) {
+function Scorable(
+  props: Criteria & {
+    id: string;
+    criteria: number;
+    candidate: number;
+    getScore?: (score: number) => void;
+  }
+) {
   const score = useScore();
   const event = useEventForm();
   const [state, setState] = useState<string | null>(null);
@@ -20,6 +27,7 @@ function Scorable(props: Criteria & { id: string; criteria: number; candidate: n
 
       if (candidates[props.candidate] === undefined) {
         candidates[props.candidate] = {
+          category: [],
           candidate: event.value.candidateList[props.candidate].name,
           criterias: [],
         };
@@ -41,6 +49,9 @@ function Scorable(props: Criteria & { id: string; criteria: number; candidate: n
       if (candidates[props.candidate]) {
         if (candidates[props.candidate].criterias[props.criteria]) {
           setCurrent(candidates[props.candidate].criterias[props.criteria]);
+          if (props.getScore) {
+            props.getScore(candidates[props.candidate].criterias[props.criteria]);
+          }
         }
       }
     }
@@ -49,11 +60,16 @@ function Scorable(props: Criteria & { id: string; criteria: number; candidate: n
   useEffect(() => {
     if (current === null) return;
 
+    if (props.getScore) {
+      props.getScore(current);
+    }
+
     if (event.value.id.length > 0) {
       const candidates = score.value.candidates;
 
       if (candidates[props.candidate] === undefined) {
         candidates[props.candidate] = {
+          category: [],
           candidate: event.value.candidateList[props.candidate].name,
           criterias: [],
         };
@@ -84,7 +100,6 @@ function Scorable(props: Criteria & { id: string; criteria: number; candidate: n
             keyboardType="number-pad"
             onChangeText={(text) => {
               const num = Number(text);
-              setCurrent(num);
 
               if (num > props.maxScore) {
                 setState(`The score limit is ${props.maxScore}`);
@@ -99,6 +114,8 @@ function Scorable(props: Criteria & { id: string; criteria: number; candidate: n
                 setCurrent(props.minScore);
               } else if (num > props.maxScore) {
                 setCurrent(props.maxScore);
+              } else {
+                setCurrent(num);
               }
             }}
           />

@@ -38,6 +38,9 @@ function EventDetails(props: FormProps) {
 
   return (
     <ScrollView className="flex-1">
+      <View className="w-full mb-5">
+        <Text className="text-xl font-bold text-slate-600">Event Details</Text>
+      </View>
       <View className="w-full my-2">
         <Input
           value={data.name}

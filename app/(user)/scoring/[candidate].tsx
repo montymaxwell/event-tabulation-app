@@ -3,7 +3,7 @@ import { Criteria } from '@/lib/models';
 import { useEventForm, useScore } from '@/lib/store';
 import { FontAwesome, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View, Image, FlatList, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Scorable from './score';
@@ -19,38 +19,22 @@ function CandidateScoring() {
   const candidate = event.value.candidateList[candidateIndex];
   const data = event.value.criteriaList;
 
+  // const [scores, setScores] = useState<Array<number>>([]);
+  // const scores = score.value.candidates[candidateIndex].criterias;
+  const [total, setTotal] = useState<number>(0);
+
+  useEffect(() => {
+    if (score.value.candidates[candidateIndex] !== undefined) {
+      let count = 0;
+      score.value.candidates[candidateIndex].criterias.forEach((v) => {
+        count += v;
+      });
+
+      setTotal(count);
+    }
+  }, [score.value]);
+
   const ScoringHandler = async () => {
-    // supabase
-    //   .from('scores')
-    //   .insert({
-    //     event: event.value.id,
-    //     owner: score.value.owner,
-    //     candidates: score.value.candidates,
-    //   })
-    //   .select()
-    //   .then(async (create) => {
-    //     if (create.error) {
-    //       console.log('create: ', create.error);
-    //       if (create.error.code === '23505') {
-    //         const { error, data } = await supabase
-    //           .from('scores')
-    //           .update({ candidates: score.value.candidates })
-    //           .eq('event', event.value.id)
-    //           .eq('owner', score.value.owner)
-    //           .select();
-    //         if (error) {
-    //           console.log('update: ', error);
-    //           return;
-    //         }
-
-    //         score.append({ candidates: data[0].candidates });
-    //       }
-    //       return;
-    //     }
-
-    //     score.append({ candidates: create.data[0].candidates });
-    //   });
-
     supabase
       .from('scores')
       .select('*')
@@ -65,7 +49,7 @@ function CandidateScoring() {
         if (existing.data.length > 0) {
           const update = await supabase
             .from('scores')
-            .update({ candidates: score.value.candidates })
+            .update({ candidates: score.value.candidates, label: score.value.label })
             .eq('event', event.value.id)
             .eq('owner', score.value.owner)
             .select();
@@ -83,6 +67,7 @@ function CandidateScoring() {
               event: event.value.id,
               owner: score.value.owner,
               candidates: score.value.candidates,
+              label: score.value.label,
             })
             .select();
 
@@ -94,8 +79,6 @@ function CandidateScoring() {
           score.append({ candidates: create.data[0].candidates });
         }
       });
-
-    router.back();
   };
 
   return (
@@ -132,6 +115,10 @@ function CandidateScoring() {
           <View className="flex-auto mx-3">
             <Text className="text-xs">Candidate No. {candidate.position}</Text>
             <Text className="text-lg">{candidate.name}</Text>
+          </View>
+          <View className="w-auto items-center">
+            <Text className="text-xs">Total Score</Text>
+            <Text className="text-xl font-bold text-blue-400">{total}</Text>
           </View>
         </View>
 

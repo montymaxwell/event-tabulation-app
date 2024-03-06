@@ -54,52 +54,52 @@ function CriteriaSelection() {
         // console.log(JSON.stringify(candidateList, null, 2));
       });
 
-    supabase
-      .channel('scoring')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'scores' },
-        async (payload) => {
-          // console.log('payload: ', JSON.stringify(payload.new, null, 2));
-          const newData: Score = payload.new as any;
-          const oldData = payload.old as any;
+    // supabase
+    //   .channel('scoring')
+    //   .on(
+    //     'postgres_changes',
+    //     { event: '*', schema: 'public', table: 'scores' },
+    //     async (payload) => {
+    //       // console.log('payload: ', JSON.stringify(payload.new, null, 2));
+    //       const newData: Score = payload.new as any;
+    //       const oldData = payload.old as any;
 
-          // console.log('data: ', newData);
-          // console.log('Scores: ', scores);
+    //       // console.log('data: ', newData);
+    //       // console.log('Scores: ', scores);
 
-          // const index = scores.filter((v, i) => (v.owner === newData.owner ? i : -1));
-          const mutatedScores = (await supabase.from('scores').select('*').eq('id', oldData.id))
-            .data as Array<Score>;
-          mutatedScores.forEach((score, i) => {
-            if (score.owner === newData.owner) {
-              mutatedScores[i] = newData;
-            }
-          });
+    //       // const index = scores.filter((v, i) => (v.owner === newData.owner ? i : -1));
+    //       const mutatedScores = (await supabase.from('scores').select('*').eq('id', oldData.id))
+    //         .data as Array<Score>;
+    //       mutatedScores.forEach((score, i) => {
+    //         if (score.owner === newData.owner) {
+    //           mutatedScores[i] = newData;
+    //         }
+    //       });
 
-          setScores([...mutatedScores]);
-          const scoreList: Array<number> = [];
-          const candidateList: Array<any> = [];
-          mutatedScores.forEach((entry: Score, index: number) => {
-            entry.candidates.forEach((c, i) => {
-              if (candidateList[i] === undefined) {
-                candidateList[i] = { candidate: c.candidate, judgeScores: [] };
-              }
+    //       setScores([...mutatedScores]);
+    //       const scoreList: Array<number> = [];
+    //       const candidateList: Array<any> = [];
+    //       mutatedScores.forEach((entry: Score, index: number) => {
+    //         entry.candidates.forEach((c, i) => {
+    //           if (candidateList[i] === undefined) {
+    //             candidateList[i] = { candidate: c.candidate, judgeScores: [] };
+    //           }
 
-              candidateList[i].judgeScores.push({ id: entry.owner, scores: c.criterias });
+    //           candidateList[i].judgeScores.push({ id: entry.owner, scores: c.criterias });
 
-              if (scoreList[i] === undefined) {
-                scoreList[i] = 0;
-              }
+    //           if (scoreList[i] === undefined) {
+    //             scoreList[i] = 0;
+    //           }
 
-              scoreList[i] += c.criterias[selection];
-            });
-          });
+    //           scoreList[i] += c.criterias[selection];
+    //         });
+    //       });
 
-          setRanking(scoreList.sort((a, b) => a - b));
-          setCandidates(candidateList);
-        }
-      )
-      .subscribe();
+    //       setRanking(scoreList.sort((a, b) => a - b));
+    //       setCandidates(candidateList);
+    //     }
+    //   )
+    //   .subscribe();
   }, []);
 
   if (scores.length === 0) {

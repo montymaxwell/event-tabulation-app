@@ -9,9 +9,10 @@ import { useEventForm, useUser } from '@/lib/store';
 import EventDetails from '@/components/Event/EventDetails';
 import EventCriteria from '@/components/Event/EventCriteria';
 import EventCandidate from '@/components/Event/EventCandidate';
+import EventCategory from '@/components/Event/EventCategory';
 
 const minStep = 0;
-const maxStep = 2;
+const maxStep = 3;
 
 function EventForm() {
   const user = useUser();
@@ -75,7 +76,8 @@ function EventForm() {
       <View className="flex-auto p-5">
         {step === 0 ? <EventDetails /> : <></>}
         {step === 1 ? <EventCriteria /> : <></>}
-        {step === 2 ? (
+        {step === 2 ? <EventCategory /> : <></>}
+        {step === 3 ? (
           <View className="flex-1">
             <View className="w-full flex flex-row flex-wrap justify-end items-center">
               <Button

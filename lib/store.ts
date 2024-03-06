@@ -32,12 +32,14 @@ type UserStore = {
 
 export type ScorableEvent = {
   candidate: string,
+  category: Array<number> // using category as indexes
   criterias: Array<number> // using criteria as indexes
 }
 
 export type Score = {
   id: string,
   owner: string,
+  label?: string,
   candidates: Array<ScorableEvent> // using candidates as indexes
 }
 
@@ -60,14 +62,55 @@ export const useUser = create<UserStore>()(
         username: null,
       },
       init: () => {
-        if (get().value.client === null) {
-          supabase.from('clients').insert({ device: { ...Device } }).select().then(({ error, data }) => {
+        const client = get().value.client;
+        if (client) {
+          supabase.from('clients').select('*').eq('id', client).then(({ error, data }) => {
             if (error) {
               console.log(error);
               return;
             }
-  
-            set((prev) => ({ value: { ...prev.value, client: data[0].id } }));
+
+            if (data.length > 0) {
+              set((prev) => ({ value: { ...prev.value, client: data[0].id } }));
+            }
+            else {
+              const device = { ...Device };
+              supabase.from('clients').insert([{ device: device }]).select('*').then(({ error, data }) => {
+                if (error) {
+                  console.log(error);
+                  get().init();
+                  return;
+                }
+
+                if (data.length > 0) {
+                  set((prev) => ({ value: { ...prev.value, client: data[0].id } }));
+                  return;
+                }
+                else {
+                  get().init();
+                  return;
+                }
+              });
+            }
+          });
+        }
+        else {
+          const device = { ...Device };
+          supabase.from('clients').insert([{ device: device }]).select('*').then(({ error, data }) => {
+            if (error) {
+              console.log(error);
+              get().init();
+              return;
+            }
+
+            if (data.length > 0) {
+              set((prev) => ({ value: { ...prev.value, client: data[0].id } }));
+              return;
+            }
+            else {
+              get().init();
+              return;
+            }
           })
         }
       },
@@ -98,6 +141,13 @@ export const useUser = create<UserStore>()(
             client: prev.value.client,
           }
         }));
+        
+        supabase.from('clients').update({ user: null }).eq('id', get().value.id).then(({ error, data }) => {
+          if (error) {
+            console.log(error);
+            return;
+          }
+        })
       },
     }),
     {
@@ -107,31 +157,6 @@ export const useUser = create<UserStore>()(
   )
 );
 
-// type ClientStore = {
-//   id: string | null,
-//   init: () => void
-// }
-
-// export const useClient = create<ClientStore>()(
-//   persist((set, get) => ({
-//     id: null,
-//     init: () => {
-//       const id = get().id;
-//       if (id === null) {
-//         supabase.from('client').insert({ device_name: Device.brand }).select('*').then(({ error, data }) => {
-//           if (error) {
-//             console.log(error);
-//             return;
-//           }
-
-//           set(() => ({ id: data[0].id }));
-//         })
-//       }
-//     }
-
-//   }), { name: 'client', storage: createJSONStorage(() => AsyncStorage) })
-// )
-
 export const useEventForm = create<ZustandStore<EventData> & { append: (data: Partial<EventData>) => void }>((set) => ({
     value: {
       id: '',
@@ -140,7 +165,9 @@ export const useEventForm = create<ZustandStore<EventData> & { append: (data: Pa
       description: '',
       location: '',
       criteriaList: [],
-      candidateList: []
+      category: [],
+      candidateList: [],
+      judges: null,
     },
     write: (data) => {
       set(() => ({ value: data }));
@@ -153,8 +180,10 @@ export const useEventForm = create<ZustandStore<EventData> & { append: (data: Pa
           owner: '',
           description: '',
           location: '',
+          category: [],
           criteriaList: [],
-          candidateList: []
+          candidateList: [],
+          judges: null,
         }
       })
     },
@@ -168,6 +197,7 @@ export const useScore = create<ScoreList>()(
     value: {
       id: '',
       owner: '',
+      label: '',
       candidates: []
     },
     write: (data) => {
@@ -192,6 +222,7 @@ export const useScore = create<ScoreList>()(
         value: {
           id: '',
           owner: '',
+          label: '',
           candidates: []
         }
       })
@@ -199,6 +230,24 @@ export const useScore = create<ScoreList>()(
 
   }), { name: 'user-score', storage: createJSONStorage(() => AsyncStorage) })
 )
+
+type StoreScores = Array<{ id: number, event: string, owner: string, label: string, candidates: Array<{ candidate: string, category: Array<number>, criterias: Array<number> }> }>
+
+type ZustandStoreScores = {
+  value: StoreScores,
+  write: (data: StoreScores) => void,
+  append: (data: Partial<StoreScores>) => void
+}
+
+export const useScores = create<ZustandStoreScores>()((set, get) => ({
+  value: [],
+  write: (data: StoreScores) => {
+    set(() => ({ value: data }));
+  },
+  append: (data) => {
+    set(() => ({ value: [ ...get().value, data as any ] }));
+  },
+}))
 
 export const useEvents = create<ZustandStoreArray<Event>>()(
   persist(

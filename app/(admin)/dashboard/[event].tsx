@@ -8,75 +8,13 @@ import { View, Image, Text, FlatList, Pressable, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Criteria from './criterias';
 import { useState } from 'react';
+import EventData from './data';
 
 function EventDashboard() {
   const event = useEventForm();
   const router = useRouter();
 
   const [confirmModal, setConfirmModal] = useState<boolean>(false);
-
-  // return (
-  //   <View className="flex-1 p-5">
-  //     <View className="flex-auto">
-  //       {event.value.id.length > 0 ? (
-  //         <>
-  //           <View className="w-full mb-3">
-  //             <Text className="text-lg font-bold text-slate-600">{event.value.name}</Text>
-  //           </View>
-  //           <FlatList
-  //             data={event.value.candidateList}
-  //             keyExtractor={(item) => item.position}
-  //             renderItem={({ item, index }: { item: Candidate; index: number }) => (
-  //               <Pressable
-  //                 onPress={() => {
-  //                   // router.push({
-  //                   //   pathname: '/(user)/scoring/[candidate]',
-  //                   //   params: { candidate: index },
-  //                   // });
-  //                 }}
-  //                 className="w-full my-3 flex flex-row flex-wrap items-center p-3 rounded-lg bg-slate-100/70 active:bg-slate-200/50">
-  //                 <View className="w-auto border-r pr-3 border-white">
-  //                   <View className="w-12 h-12 flex flex-row justify-center items-center">
-  //                     {item.image !== null ? (
-  //                       <Image
-  //                         width={48}
-  //                         height={48}
-  //                         className="w-full h-full rounded-full"
-  //                         source={{ uri: item.image }}
-  //                       />
-  //                     ) : (
-  //                       <View className="w-auto px-3 py-2.5 rounded-full bg-indigo-500">
-  //                         <FontAwesome5 name="user-tie" size={24} color="#fff" />
-  //                       </View>
-  //                     )}
-  //                   </View>
-  //                 </View>
-  //                 <View className="flex-auto mx-3">
-  //                   <Text className="text-xs">Candidate No. {item.position}</Text>
-  //                   <Text className="text-lg">{item.name}</Text>
-  //                 </View>
-  //               </Pressable>
-  //             )}
-  //           />
-  //         </>
-  //       ) : (
-  //         <></>
-  //       )}
-  //     </View>
-  //     <View className="w-full flex flex-row flex-wrap">
-  //       <Button label="Delete" color="red" />
-  //       <View className="flex-auto ml-2">
-  //         <Button
-  //           onPress={() => {
-  //             router.push({ pathname: '/(admin)/event/[id]', params: { id: event.value.id } });
-  //           }}
-  //           label="Edit"
-  //           fullsize
-  //         />
-  //       </View>
-  //     </View>
-  //   </View>
-  // );
 
   const EventRoom = async () => {
     console.log(supabase.getChannels());
@@ -104,8 +42,6 @@ function EventDashboard() {
   };
 
   const remove = () => {
-    console.log(event.value.id);
-
     supabase
       .from('events')
       .update({ marked: true })
@@ -134,11 +70,6 @@ function EventDashboard() {
               </Pressable>
             </View>
             <View className="w-full p-5 my-2 border-y border-slate-200">
-              {/* {itemIndex !== null ? (
-                <Text>Are you sure you want to delete critera {list.at(itemIndex)!.name}?</Text>
-              ) : (
-                <></>
-              )} */}
               <Text>Are you sure you want to delete event?</Text>
             </View>
             <View className="w-full flex flex-row flex-wrap">
@@ -157,12 +88,8 @@ function EventDashboard() {
           </View>
         </View>
       </Modal>
-      {/* <View className="flex-auto"></View> */}
-      {/* <View className="w-full flex flex-row flex-wrap justify-between">
-        <Button onPress={StopEvent} label="End Event" />
-        <Button onPress={EventRoom} label="Start Event" />
-      </View> */}
-      <Criteria />
+      {/* <Criteria /> */}
+      <EventData />
       <View className="w-full flex flex-row flex-wrap">
         <Button
           onPress={() => {

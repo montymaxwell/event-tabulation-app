@@ -17,12 +17,10 @@ function Index() {
     // AsyncStorage.clear();
     user.init();
     set_client_account();
-
-    // console.log(user.value);
   }, []);
 
   const JudgeButton = () => {
-    router.push('/(user)/screens/');
+    router.push('/(client)/screens/');
   };
 
   const HostButton = () => {

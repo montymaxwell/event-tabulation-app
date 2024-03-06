@@ -33,6 +33,8 @@ export type EventData = {
   owner: string,
   location: string,
   description: string,
+  category: Array<Criteria>,
   criteriaList: Array<Criteria>,
-  candidateList: Array<Candidate>
+  candidateList: Array<Candidate>,
+  judges: { [id: string]: string } | null
 }

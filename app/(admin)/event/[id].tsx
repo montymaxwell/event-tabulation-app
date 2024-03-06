@@ -9,9 +9,10 @@ import { useEventForm, useUser } from '@/lib/store';
 import EventDetails from '@/components/Event/EventDetails';
 import EventCriteria from '@/components/Event/EventCriteria';
 import EventCandidate from '@/components/Event/EventCandidate';
+import EventCategory from '@/components/Event/EventCategory';
 
 const minStep = 0;
-const maxStep = 2;
+const maxStep = 3;
 
 function EventForm() {
   const user = useUser();
@@ -60,6 +61,7 @@ function EventForm() {
           description: form.description,
           criteriaList: form.criteriaList,
           candidateList: form.candidateList,
+          category: form.category,
         });
 
         if (error) {
@@ -95,11 +97,16 @@ function EventForm() {
     <View className="w-full h-full">
       <View className="flex-auto p-5">
         {step === 0 ? <EventDetails /> : <></>}
-        {step === 1 ? <EventCriteria /> : <></>}
-        {step === 2 ? (
+        {step === 1 ? <EventCategory /> : <></>}
+        {step === 2 ? <EventCriteria /> : <></>}
+        {step === 3 ? (
           <View className="flex-1">
-            <View className="w-full flex flex-row flex-wrap justify-end items-center">
+            <View className="w-full flex flex-row flex-wrap justify-between items-center">
+              <View className="w-auto mb-5">
+                <Text className="text-xl font-bold text-slate-600">Candidates</Text>
+              </View>
               <Button
+                size="sm"
                 onPress={() => {
                   router.push({ pathname: '/candidate/[id]', params: { id: 'create' } });
                 }}

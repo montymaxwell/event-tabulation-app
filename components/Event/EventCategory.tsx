@@ -7,37 +7,19 @@ import Input from '../Input';
 import { ClientResponse, Criteria } from '@/lib/models';
 import { useEventForm } from '@/lib/store';
 
-type FormData = {
-  initialData?: Array<any>;
-  getData?: (data: any) => void;
-};
-
-function EventCriteria(props: FormData) {
+function EventCategory() {
   const event = useEventForm();
 
-  const [maxScore, setMaxScore] = useState<number>(0);
+  const [maxScore, setMaxScore] = useState<number>(10);
   const [currentData, setCurrentData] = useState<Partial<Criteria>>({ minScore: 1, maxScore });
-  const [list, setList] = useState<Array<Criteria>>(event.value.criteriaList as any);
+  const [list, setList] = useState<Array<Criteria>>(event.value.category as any);
   const [alert, setAlert] = useState<ClientResponse | null>(null);
 
   const [itemIndex, setItemIndex] = useState<number | null>(null);
   const [confirmModal, setConfirmModal] = useState<boolean>(false);
 
-  const [maxScorable, setMaxScorable] = useState<boolean | null>(null);
-
   useEffect(() => {
-    if (props.getData) {
-      props.getData(list);
-    }
-
-    let list_score = 100;
-    list.forEach((item) => {
-      list_score = list_score - item.maxScore;
-    });
-
-    setMaxScore(list_score);
-    setCurrentData((prev) => ({ ...prev, maxScore: list_score }));
-    event.append({ criteriaList: [...list] });
+    event.append({ category: [...list] });
   }, [list]);
 
   const add = () => {
@@ -67,7 +49,6 @@ function EventCriteria(props: FormData) {
     }
 
     if (maxScore > 0) {
-      setMaxScore((prev) => prev - currentData.maxScore!);
       setList((prev) => [...prev, currentData as Criteria]);
       setCurrentData({ minScore: 1, maxScore: maxScore });
     }
@@ -135,7 +116,7 @@ function EventCriteria(props: FormData) {
       )}
       <View className="w-full flex flex-row flex-wrap my-2">
         <View className="w-full mb-5">
-          <Text className="text-xl font-bold text-slate-600">General Criteria</Text>
+          <Text className="text-xl font-bold text-slate-600">Minor Category</Text>
         </View>
         <View className="flex-auto mr-2">
           <Input
@@ -156,6 +137,7 @@ function EventCriteria(props: FormData) {
           <Input
             inlineLabel="Min."
             placeholder="Score"
+            keyboardType="number-pad"
             value={currentData.minScore ? String(currentData.minScore) : undefined}
             onChangeText={(text) => {
               setCurrentData((prev) => ({ ...prev, minScore: Number(text) }));
@@ -166,26 +148,10 @@ function EventCriteria(props: FormData) {
           <Input
             inlineLabel="Max"
             placeholder="Score"
-            error={maxScorable !== null ? maxScorable : undefined}
-            helperText={
-              maxScorable !== null && maxScorable === true
-                ? maxScore === 0
-                  ? 'Limit is reached'
-                  : `The Limit is ${maxScore}`
-                : ''
-            }
+            keyboardType="number-pad"
             value={String(maxScore)}
             onChangeText={(text) => {
               setCurrentData((prev) => ({ ...prev, maxScore: Number(text) }));
-              if (text.length === 0) {
-                setMaxScorable(null);
-              }
-
-              if (Number(text) < maxScore) {
-                setMaxScorable(false);
-              } else if (Number(text) > maxScore) {
-                setMaxScorable(true);
-              }
             }}
           />
         </View>
@@ -215,4 +181,4 @@ function EventCriteria(props: FormData) {
   );
 }
 
-export default EventCriteria;
+export default EventCategory;

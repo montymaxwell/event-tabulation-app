@@ -3,7 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { View, Image, Pressable, Text, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Candidate } from '@/lib/models';
 import { useEventForm, useScore, useUser } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
@@ -14,6 +14,9 @@ function JudgeEvent() {
   const router = useRouter();
   const event = useEventForm();
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  const [page, setPage] = useState<Array<number>>([0, 5]);
+  const renderable = event.value.candidateList.slice(page[0], page[1]);
 
   useEffect(() => {
     if (id.length > 0) {
@@ -92,7 +95,7 @@ function JudgeEvent() {
               <Text className="text-lg font-bold text-slate-600">{event.value.name}</Text>
             </View>
             <FlatList
-              data={event.value.candidateList}
+              data={renderable}
               keyExtractor={(item) => item.position}
               renderItem={({ item, index }: { item: Candidate; index: number }) => (
                 <Pressable
@@ -126,6 +129,26 @@ function JudgeEvent() {
                 </Pressable>
               )}
             />
+            <View className="w-full p-3 flex flex-row flex-wrap items-center">
+              {page[0] > 4 ? (
+                <Pressable
+                  onPress={() => setPage((prev) => [prev[0] - 5, prev[1] - 5])}
+                  className="w-auto py-2.5 px-5 rounded-lg active:bg-slate-100/70">
+                  <Text className="text-base text-blue-400">Previous</Text>
+                </Pressable>
+              ) : (
+                <></>
+              )}
+              {page[1] <= event.value.candidateList.length - 1 ? (
+                <Pressable
+                  onPress={() => setPage((prev) => [prev[0] + 5, prev[1] + 5])}
+                  className="w-auto ml-auto py-2.5 px-5 rounded-lg active:bg-slate-100/70">
+                  <Text className="text-base text-blue-400">Next</Text>
+                </Pressable>
+              ) : (
+                <></>
+              )}
+            </View>
           </>
         ) : (
           <></>
