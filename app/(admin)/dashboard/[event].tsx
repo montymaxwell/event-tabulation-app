@@ -90,6 +90,11 @@ function EventDashboard() {
       </Modal>
       {/* <Criteria /> */}
       <EventData />
+      <View className='w-full flex flex-row flex-wrap my-5 justify-end'>
+        <Pressable onPress={() => { router.push('/(admin)/dashboard/document') }} className='w-auto px-5 py-2.5 rounded-lg bg-slate-200 active:bg-slate-300'>
+          <Text className='text-base text-slate-600'>Generate Results</Text>
+        </Pressable>
+      </View>
       <View className="w-full flex flex-row flex-wrap">
         <Button
           onPress={() => {
