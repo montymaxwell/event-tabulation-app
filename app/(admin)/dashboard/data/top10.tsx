@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
+const end = 10;
+
 function Criteria() {
   const router = useRouter();
   const event = useEventForm();
@@ -18,18 +20,25 @@ function Criteria() {
       scores: Array<{ candidate: string; score: number }>;
     }> = [];
 
-    scores.forEach((judge, i) => {
-      if (scorelist[i] === undefined) {
-        scorelist[i] = { id: judge.owner, label: judge.label, scores: [] };
+    let i = 0;
+    while (i < end) {
+      const judge = scores[i];
+
+      if (judge) {
+        if (scorelist[i] === undefined) {
+          scorelist[i] = { id: judge.owner, label: judge.label, scores: [] };
+        }
+  
+        judge.candidates.forEach((candidate, cand) => {
+          scorelist[i].scores[cand] = { candidate: candidate.candidate, score: 0 };
+          candidate.criterias.forEach((criteria, crit) => {
+            scorelist[i].scores[cand].score += criteria;
+          });
+        });
       }
 
-      judge.candidates.forEach((candidate, cand) => {
-        scorelist[i].scores[cand] = { candidate: candidate.candidate, score: 0 };
-        candidate.criterias.forEach((criteria, crit) => {
-          scorelist[i].scores[cand].score += criteria;
-        });
-      });
-    });
+      i++;
+    }
 
     const candidates: Array<{ candidate: string; score: number }> = [];
     scorelist.forEach((v, i) => {
@@ -67,25 +76,6 @@ function Criteria() {
               </View>
             ))}
           </View>
-          {event.value.criteriaList.map((criteria, index) => (
-            <View
-              key={index}
-              className="w-full flex flex-row flex-wrap items-center py-2.5 px-3.5 my-2 rounded-lg bg-slate-100">
-              <View className="flex-auto">
-                <Text>{criteria.name}</Text>
-              </View>
-              <Button
-                onPress={() => {
-                  router.push({
-                    pathname: '/(admin)/dashboard/data/criterias/[criteria]',
-                    params: { criteria: index },
-                  });
-                }}
-                size="sm"
-                label="Scores"
-              />
-            </View>
-          ))}
         </ScrollView>
       </View>
     );

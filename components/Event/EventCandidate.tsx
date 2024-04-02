@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AntDesign, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
-import { FlatList, Image, Modal, Pressable, Text, View } from 'react-native';
+import { FlatList, Image, Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Candidate } from '@/lib/models';
 import { useEventForm } from '@/lib/store';

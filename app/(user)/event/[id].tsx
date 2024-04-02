@@ -31,6 +31,7 @@ function JudgeEvent() {
           }
 
           event.write(data[0]);
+          console.log(data);
 
           const owner = user.getID();
           const scores = await supabase

@@ -78,6 +78,8 @@ function CandidateScoring() {
 
           score.append({ candidates: create.data[0].candidates });
         }
+
+        router.back();
       });
   };
 

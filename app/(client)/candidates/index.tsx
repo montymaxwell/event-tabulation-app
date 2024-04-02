@@ -27,9 +27,11 @@ function Candidates() {
             renderItem={({ item, index }: { item: Candidate; index: number }) => (
               <Pressable
                 onPress={() => {
+                  console.log(page[0] + index);
+
                   router.push({
                     pathname: '/(user)/scoring/[candidate]',
-                    params: { candidate: index },
+                    params: { candidate: page[0] + index },
                   });
                 }}
                 className="w-full my-3 flex flex-row flex-wrap items-center p-3 rounded-lg bg-slate-100/70 active:bg-slate-200/50">
@@ -73,7 +75,11 @@ function Candidates() {
                 <Text className="text-base text-blue-400">Next</Text>
               </Pressable>
             ) : (
-              <></>
+              <Pressable
+                onPress={() => router.back()}
+                className="w-auto ml-auto py-2.5 px-5 rounded-lg active:bg-slate-100/70">
+                <Text className="text-base text-blue-400">Done</Text>
+              </Pressable>
             )}
           </View>
         </>

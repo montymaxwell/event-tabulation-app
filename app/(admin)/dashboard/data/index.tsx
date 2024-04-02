@@ -102,15 +102,25 @@ function EventData() {
         <View className="w-full bg-white">
           <Pressable
             onPress={() => {
-              // setCritera(1);
               router.push('/(admin)/dashboard/data/criterias/');
             }}
             className="w-full flex flex-row flex-wrap items-center py-4 px-5 my-2 rounded-lg bg-blue-500/70 active:bg-blue-500/50">
             <Text className="text-lg font-bold text-white">General Criteria</Text>
           </Pressable>
-          {/* <View className="flex-auto border-l mx-1.5 pl-2 border-blue-200/60">
-            {criteria === 1 ? <GeneralCriteria /> : <></>}
-          </View> */}
+          <Pressable
+            onPress={() => {
+              router.push('/(admin)/dashboard/data/top10');
+            }}
+            className="w-full flex flex-row flex-wrap items-center py-4 px-5 my-2 rounded-lg bg-blue-500/70 active:bg-blue-500/50">
+            <Text className="text-lg font-bold text-white">Top 10</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              router.push('/(admin)/dashboard/data/top10');
+            }}
+            className="w-full flex flex-row flex-wrap items-center py-4 px-5 my-2 rounded-lg bg-blue-500/70 active:bg-blue-500/50">
+            <Text className="text-lg font-bold text-white">Top 5</Text>
+          </Pressable>
         </View>
       </ScrollView>
     </View>
