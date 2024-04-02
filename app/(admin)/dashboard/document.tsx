@@ -158,9 +158,9 @@ export default function DocumentPage () {
   }, [])
 
   const GenerateFinalOutput = () => {
-    // if (Platform.OS === 'web') {
-    //   window.print();
-    // }
+    if (Platform.OS === 'web') {
+      window.print();
+    }
 
     if (minorCriteria && generalCriteria) {
       // first array = sheet
