@@ -116,7 +116,7 @@ function EventData() {
           </Pressable>
           <Pressable
             onPress={() => {
-              router.push('/(admin)/dashboard/data/top10');
+              router.push('/(admin)/dashboard/data/top5');
             }}
             className="w-full flex flex-row flex-wrap items-center py-4 px-5 my-2 rounded-lg bg-blue-500/70 active:bg-blue-500/50">
             <Text className="text-lg font-bold text-white">Top 5</Text>

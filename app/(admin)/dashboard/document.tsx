@@ -27,7 +27,7 @@ type Data = Array<{
   scores: Array<number>
 }>
 
-export default function DocumentPage () {
+export default function DocumentPage() {
   const event = useEventForm((state) => state.value)
   const scores = useScores((state) => state.value)
 
@@ -75,9 +75,9 @@ export default function DocumentPage () {
           structured_data_minor[categoryIndex].data[entryIndex].total += category;
           structured_data_minor[categoryIndex].data[entryIndex].scores[scoreIndex] = {
             judge: {
-                id: score.owner,
-                label: score.label,
-                index: scoreIndex 
+              id: score.owner,
+              label: score.label,
+              index: scoreIndex
             },
             value: category
           }
@@ -98,7 +98,7 @@ export default function DocumentPage () {
             scores: []
           }
         }
-        
+
         let total = 0;
         entry.criterias.forEach((v, i) => {
           total += v;
@@ -112,7 +112,7 @@ export default function DocumentPage () {
             structured_data_gen[entryIndex].average += total;
           }
         });
-        
+
         structured_data_gen[entryIndex].scores[scoreIndex] = total;
         if (structured_data_gen[entryIndex].scores.length === scores.length) {
           structured_data_gen[entryIndex].average = Math.round(((structured_data_gen[entryIndex].average / scores.length) + Number.EPSILON) * 100) / 100;
@@ -120,7 +120,7 @@ export default function DocumentPage () {
       });
     });
 
-    structured_data_gen.sort((a, b) =>  (a.average - b.average)).reverse();
+    structured_data_gen.sort((a, b) => (a.average - b.average)).reverse();
 
     structured_data_minor.forEach((v, i) => {
       v.data.sort((a, b) => a.average - b.average).reverse();
@@ -139,7 +139,7 @@ export default function DocumentPage () {
     const top5: Array<any> = [];
 
     let i = 0;
-    while(i < 10) {
+    while (i < 10) {
       if (top5.length < 5) {
         top5[i] = structured_data_gen[i];
       }
@@ -170,7 +170,7 @@ export default function DocumentPage () {
       const book = XLSX.utils.book_new();
       minorCriteria.raw.forEach((row, r) => {
         const table: Array<any> = [];
-        
+
         row.forEach((row2, r2) => {
           if (r2 === 0) {
             table[r2] = [["best in " + minorCriteria.structured[r].name]];
@@ -201,9 +201,9 @@ export default function DocumentPage () {
         table[1].push("Ranking");
 
         XLSX.utils.book_append_sheet(
-          book, 
-          XLSX.utils.aoa_to_sheet(table), 
-          minorCriteria.structured[r].name, 
+          book,
+          XLSX.utils.aoa_to_sheet(table),
+          minorCriteria.structured[r].name,
           true
         );
       });
@@ -213,7 +213,7 @@ export default function DocumentPage () {
       const top5: Array<any> = [];
 
       generalCriteria.structured.forEach((entry, entryIndex) => {
-        if(entryIndex === 0) {
+        if (entryIndex === 0) {
           table2[entryIndex] = ["General Criteria"]
           top10[entryIndex] = ["Top 10"];
           top5[entryIndex] = ["Top 5"];
@@ -221,7 +221,7 @@ export default function DocumentPage () {
           table2[entryIndex + 1] = ["Candidates"]
           top10[entryIndex + 1] = ["Candidates"]
           top5[entryIndex + 1] = ["Candidates"]
-          
+
 
           scores.forEach((v) => {
             const text = v.label.split("");
@@ -251,18 +251,18 @@ export default function DocumentPage () {
           }
 
           table2[entryIndex + 2].push(String(score));
-          
+
           if (i === (entry.scores.length - 1)) {
             table2[entryIndex + 2].push(entry.average);
             table2[entryIndex + 2][entry.scores.length + 1] = String(entry.average);
           }
         });
-        
+
         table2[entryIndex + 2].push(String(entryIndex + 1));
       });
 
       let i = 0;
-      while(i < 10) {
+      while (i < 10) {
         if (top5.length < 7) {
           top5[i + 2] = table2[i + 2];
         }
@@ -275,26 +275,26 @@ export default function DocumentPage () {
       // top5[0][0] = "Top 5";
 
       XLSX.utils.book_append_sheet(
-        book, 
-        XLSX.utils.aoa_to_sheet(table2), 
-        "General Criteria", 
+        book,
+        XLSX.utils.aoa_to_sheet(table2),
+        "General Criteria",
         true
       );
 
       XLSX.utils.book_append_sheet(
-        book, 
-        XLSX.utils.aoa_to_sheet(top10), 
-        "Top 10", 
+        book,
+        XLSX.utils.aoa_to_sheet(top10),
+        "Top 10",
         true
       );
 
       XLSX.utils.book_append_sheet(
-        book, 
-        XLSX.utils.aoa_to_sheet(top5), 
-        "Top 5", 
+        book,
+        XLSX.utils.aoa_to_sheet(top5),
+        "Top 5",
         true
       );
-      
+
       if (Platform.OS === 'web') {
         XLSX.writeFile(book, "data.xlsx", { compression: true });
 
@@ -307,14 +307,14 @@ export default function DocumentPage () {
     <ScrollView className="flex-auto">
       <View className="w-full">
         {minorCriteria ? minorCriteria.structured.map((score, scoreIndex) => (
-          <View key={'score-'+scoreIndex} className="w-full p-3 my-2">
-            <View key={'score-name-'+scoreIndex} className="w-full mb-2">
+          <View key={'score-' + scoreIndex} className="w-full p-3 my-2">
+            <View key={'score-name-' + scoreIndex} className="w-full mb-2">
               <Text>{score.name}</Text>
             </View>
             {score.data.map((data, index) => (
               <>
                 {index === 0 ?
-                  <View key={'header-'+index} className="w-full flex-row flex-nowrap">
+                  <View key={'header-' + index} className="w-full flex-row flex-nowrap">
                     <View className="flex-auto items-center border">
                       <Text>Candidates</Text>
                     </View>
@@ -323,34 +323,34 @@ export default function DocumentPage () {
                       text[0] = text[0].toUpperCase();
 
                       return (
-                        <View key={'th-'+i} className="w-10 flex-auto items-center border">
+                        <View key={'th-' + i} className="w-10 flex-auto items-center border">
                           <Text>{text.join('')}</Text>
                         </View>
                       )
                     })}
-                    <View key={'minor-average-'+index} className="w-10 flex-auto items-center border">
+                    <View key={'minor-average-' + index} className="w-10 flex-auto items-center border">
                       <Text>Average</Text>
                     </View>
-                    <View key={'minor-ranking-'+index} className="w-10 flex-auto items-center border">
+                    <View key={'minor-ranking-' + index} className="w-10 flex-auto items-center border">
                       <Text>Ranking</Text>
                     </View>
                   </View>
                   :
                   <></>
                 }
-                <View key={'entry-'+index} className="w-full flex-row flex-nowrap">
-                  <View key={'name-'+index} className="flex-auto items-center border">
+                <View key={'entry-' + index} className="w-full flex-row flex-nowrap">
+                  <View key={'name-' + index} className="flex-auto items-center border">
                     <Text>{data.name}</Text>
                   </View>
                   {data.scores.map((e, i) => (
-                    <View key={'score-'+i} className="w-10 flex-auto items-center border">
+                    <View key={'score-' + i} className="w-10 flex-auto items-center border">
                       <Text>{e.value}</Text>
                     </View>
                   ))}
-                  <View key={'average-'+index} className="w-10 flex-auto items-center border">
+                  <View key={'average-' + index} className="w-10 flex-auto items-center border">
                     <Text>{data.average}</Text>
                   </View>
-                  <View key={'ranking-'+index} className="w-10 flex-auto items-center border">
+                  <View key={'ranking-' + index} className="w-10 flex-auto items-center border">
                     <Text>{index + 1}</Text>
                   </View>
                 </View>
@@ -366,7 +366,7 @@ export default function DocumentPage () {
             {generalCriteria.structured.map((data, i) => (
               <>
                 {i === 0 ?
-                  <View key={'th-'+i} className="w-full flex-row">
+                  <View key={'th-' + i} className="w-full flex-row">
                     {scores.map((v, e) => {
                       const text = v.label.split("");
                       text[0] = text[0].toUpperCase();
@@ -374,47 +374,47 @@ export default function DocumentPage () {
                       return (
                         <>
                           {e === 0 ?
-                            <View key={'header-'+e} className="w-10 flex-auto items-center border">
+                            <View key={'header-' + e} className="w-10 flex-auto items-center border">
                               <Text>Candidates</Text>
                             </View>
                             :
                             <></>
                           }
-                          <View key={'head-'+e} className="w-10 flex-auto items-center border">
+                          <View key={'head-' + e} className="w-10 flex-auto items-center border">
                             <Text>{text}</Text>
                           </View>
                         </>
                       )
                     })}
-                    <View key={"gen-average-"+i} className="w-10 flex-auto items-center border">
+                    <View key={"gen-average-" + i} className="w-10 flex-auto items-center border">
                       <Text>Average</Text>
                     </View>
-                    <View key={"gen-ranking-"+i} className="w-10 flex-auto items-center border">
+                    <View key={"gen-ranking-" + i} className="w-10 flex-auto items-center border">
                       <Text>Ranking</Text>
                     </View>
                   </View>
                   :
                   <></>
                 }
-                <View key={'row'+i} className="w-full flex-row">
+                <View key={'row' + i} className="w-full flex-row">
                   {data.scores.map((score, s) => (
                     <>
-                      {s === 0 ? 
-                        <View key={'label'+i} className="w-10 flex-auto items-center border">
-                            <Text>{scores[s].candidates[i].candidate}</Text>
+                      {s === 0 ?
+                        <View key={'label' + i} className="w-10 flex-auto items-center border">
+                          <Text>{scores[s].candidates[i].candidate}</Text>
                         </View>
                         :
                         <></>
                       }
-                      <View key={'score'+s} className="w-10 flex-auto items-center border">
+                      <View key={'score' + s} className="w-10 flex-auto items-center border">
                         <Text>{score}</Text>
                       </View>
                     </>
                   ))}
-                  <View key={'average-'+i} className="w-10 flex-auto items-center border">
+                  <View key={'average-' + i} className="w-10 flex-auto items-center border">
                     <Text>{data.average}</Text>
                   </View>
-                  <View key={'ranking-'+i} className="w-10 flex-auto items-center border">
+                  <View key={'ranking-' + i} className="w-10 flex-auto items-center border">
                     <Text>{i + 1}</Text>
                   </View>
                 </View>
@@ -426,7 +426,7 @@ export default function DocumentPage () {
             {generalCriteria.top10.map((data, i) => (
               <>
                 {i === 0 ?
-                  <View key={'th-'+i} className="w-full flex-row">
+                  <View key={'th-' + i} className="w-full flex-row">
                     {scores.map((v, e) => {
                       const text = v.label.split("");
                       text[0] = text[0].toUpperCase();
@@ -434,47 +434,47 @@ export default function DocumentPage () {
                       return (
                         <>
                           {e === 0 ?
-                            <View key={'header-'+e} className="w-10 flex-auto items-center border">
+                            <View key={'header-' + e} className="w-10 flex-auto items-center border">
                               <Text>Candidates</Text>
                             </View>
                             :
                             <></>
                           }
-                          <View key={'head-'+e} className="w-10 flex-auto items-center border">
+                          <View key={'head-' + e} className="w-10 flex-auto items-center border">
                             <Text>{text}</Text>
                           </View>
                         </>
                       )
                     })}
-                    <View key={"gen-average-"+i} className="w-10 flex-auto items-center border">
+                    <View key={"gen-average-" + i} className="w-10 flex-auto items-center border">
                       <Text>Average</Text>
                     </View>
-                    <View key={"gen-ranking-"+i} className="w-10 flex-auto items-center border">
+                    <View key={"gen-ranking-" + i} className="w-10 flex-auto items-center border">
                       <Text>Ranking</Text>
                     </View>
                   </View>
                   :
                   <></>
                 }
-                <View key={'row'+i} className="w-full flex-row">
+                <View key={'row' + i} className="w-full flex-row">
                   {data.scores.map((score, s) => (
                     <>
-                      {s === 0 ? 
-                        <View key={'label'+i} className="w-10 flex-auto items-center border">
-                            <Text>{scores[s].candidates[i].candidate}</Text>
+                      {s === 0 ?
+                        <View key={'label' + i} className="w-10 flex-auto items-center border">
+                          <Text>{scores[s].candidates[i].candidate}</Text>
                         </View>
                         :
                         <></>
                       }
-                      <View key={'score'+s} className="w-10 flex-auto items-center border">
+                      <View key={'score' + s} className="w-10 flex-auto items-center border">
                         <Text>{score}</Text>
                       </View>
                     </>
                   ))}
-                  <View key={'average-'+i} className="w-10 flex-auto items-center border">
+                  <View key={'average-' + i} className="w-10 flex-auto items-center border">
                     <Text>{data.average}</Text>
                   </View>
-                  <View key={'ranking-'+i} className="w-10 flex-auto items-center border">
+                  <View key={'ranking-' + i} className="w-10 flex-auto items-center border">
                     <Text>{i + 1}</Text>
                   </View>
                 </View>
@@ -486,7 +486,7 @@ export default function DocumentPage () {
             {generalCriteria.top5.map((data, i) => (
               <>
                 {i === 0 ?
-                  <View key={'th-'+i} className="w-full flex-row">
+                  <View key={'th-' + i} className="w-full flex-row">
                     {scores.map((v, e) => {
                       const text = v.label.split("");
                       text[0] = text[0].toUpperCase();
@@ -494,54 +494,54 @@ export default function DocumentPage () {
                       return (
                         <>
                           {e === 0 ?
-                            <View key={'header-'+e} className="w-10 flex-auto items-center border">
+                            <View key={'header-' + e} className="w-10 flex-auto items-center border">
                               <Text>Candidates</Text>
                             </View>
                             :
                             <></>
                           }
-                          <View key={'head-'+e} className="w-10 flex-auto items-center border">
+                          <View key={'head-' + e} className="w-10 flex-auto items-center border">
                             <Text>{text}</Text>
                           </View>
                         </>
                       )
                     })}
-                    <View key={"gen-average-"+i} className="w-10 flex-auto items-center border">
+                    <View key={"gen-average-" + i} className="w-10 flex-auto items-center border">
                       <Text>Average</Text>
                     </View>
-                    <View key={"gen-ranking-"+i} className="w-10 flex-auto items-center border">
+                    <View key={"gen-ranking-" + i} className="w-10 flex-auto items-center border">
                       <Text>Ranking</Text>
                     </View>
                   </View>
                   :
                   <></>
                 }
-                <View key={'row'+i} className="w-full flex-row">
+                <View key={'row' + i} className="w-full flex-row">
                   {data.scores.map((score, s) => (
                     <>
-                      {s === 0 ? 
-                        <View key={'label'+i} className="w-10 flex-auto items-center border">
-                            <Text>{scores[s].candidates[i].candidate}</Text>
+                      {s === 0 ?
+                        <View key={'label' + i} className="w-10 flex-auto items-center border">
+                          <Text>{scores[s].candidates[i].candidate}</Text>
                         </View>
                         :
                         <></>
                       }
-                      <View key={'score'+s} className="w-10 flex-auto items-center border">
+                      <View key={'score' + s} className="w-10 flex-auto items-center border">
                         <Text>{score}</Text>
                       </View>
                     </>
                   ))}
-                  <View key={'average-'+i} className="w-10 flex-auto items-center border">
+                  <View key={'average-' + i} className="w-10 flex-auto items-center border">
                     <Text>{data.average}</Text>
                   </View>
-                  <View key={'ranking-'+i} className="w-10 flex-auto items-center border">
+                  <View key={'ranking-' + i} className="w-10 flex-auto items-center border">
                     <Text>{i + 1}</Text>
                   </View>
                 </View>
               </>
             ))}
           </View>
-        : <></>}
+          : <></>}
       </View>
       <View className="w-full p-3 mt-5 results-view">
         <Button

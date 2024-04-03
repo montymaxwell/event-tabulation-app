@@ -66,15 +66,21 @@ function Criteria() {
       <View className="flex-1 p-5">
         <ScrollView className="flex-auto">
           <View className="w-full">
-            {average.map((v, i) => (
-              <View
-                key={i}
-                className="w-full p-3 my-1 flex flex-row flex-wrap justify-between items-center rounded-lg border border-slate-200 bg-slate-100/80">
-                <Text className="text-base font-bold text-indigo-500">Rank #{i + 1}</Text>
-                <Text className="text-base font-bold text-slate-600">{v.candidate}</Text>
-                <Text className="text-base text-blue-800">Average Score: {v.score}</Text>
-              </View>
-            ))}
+            {average.map((v, i) => {
+              if (i < 10) {
+                return (
+                  <View
+                    key={i}
+                    className="w-full p-3 my-1 flex flex-row flex-wrap justify-between items-center rounded-lg border border-slate-200 bg-slate-100/80">
+                    <Text className="text-base font-bold text-indigo-500">Rank #{i + 1}</Text>
+                    <Text className="text-base font-bold text-slate-600">{v.candidate}</Text>
+                    <Text className="text-base text-blue-800">Average Score: {v.score}</Text>
+                  </View>
+                )
+              }
+
+              return <></>
+            })}
           </View>
         </ScrollView>
       </View>
