@@ -16,7 +16,7 @@ function EventCriteria(props: FormData) {
   const event = useEventForm();
 
   const [maxScore, setMaxScore] = useState<number>(0);
-  const [currentData, setCurrentData] = useState<Partial<Criteria>>({ minScore: 1, maxScore });
+  const [currentData, setCurrentData] = useState<Partial<Criteria>>({ minScore: 0, maxScore });
   const [list, setList] = useState<Array<Criteria>>(event.value.criteriaList as any);
   const [alert, setAlert] = useState<ClientResponse | null>(null);
 
@@ -51,10 +51,10 @@ function EventCriteria(props: FormData) {
       return;
     }
 
-    if (!currentData.minScore || currentData.minScore === 0) {
-      setAlert({ status: 'warn', message: '[ClientError]: Min. Score must be filled' });
-      return;
-    }
+    // if (!currentData.minScore) {
+    //   setAlert({ status: 'warn', message: '[ClientError]: Min. Score must be filled' });
+    //   return;
+    // }
 
     if (!currentData.maxScore || currentData.maxScore === 0) {
       setAlert({ status: 'warn', message: '[ClientError]: Max Score must be filled' });
@@ -69,7 +69,7 @@ function EventCriteria(props: FormData) {
     if (maxScore > 0) {
       setMaxScore((prev) => prev - currentData.maxScore!);
       setList((prev) => [...prev, currentData as Criteria]);
-      setCurrentData({ minScore: 1, maxScore: maxScore });
+      setCurrentData({ minScore: 0, maxScore: maxScore });
     }
   };
 

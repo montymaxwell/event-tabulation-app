@@ -11,7 +11,7 @@ function EventCategory() {
   const event = useEventForm();
 
   const [maxScore, setMaxScore] = useState<number>(10);
-  const [currentData, setCurrentData] = useState<Partial<Criteria>>({ minScore: 1, maxScore });
+  const [currentData, setCurrentData] = useState<Partial<Criteria>>({ minScore: 0, maxScore });
   const [list, setList] = useState<Array<Criteria>>(event.value.category as any);
   const [alert, setAlert] = useState<ClientResponse | null>(null);
 
@@ -23,6 +23,8 @@ function EventCategory() {
   }, [list]);
 
   const add = () => {
+    console.log(currentData.minScore);
+
     if (maxScore === 0) {
       setAlert({ status: 'error', message: '[ClientError]: Maximum score limit reached!' });
       return;
@@ -33,10 +35,10 @@ function EventCategory() {
       return;
     }
 
-    if (!currentData.minScore || currentData.minScore === 0) {
-      setAlert({ status: 'warn', message: '[ClientError]: Min. Score must be filled' });
-      return;
-    }
+    // if (!currentData.minScore) {
+    //   setAlert({ status: 'warn', message: '[ClientError]: Min. Score must be filled' });
+    //   return;
+    // }
 
     if (!currentData.maxScore || currentData.maxScore === 0) {
       setAlert({ status: 'warn', message: '[ClientError]: Max Score must be filled' });
@@ -50,7 +52,7 @@ function EventCategory() {
 
     if (maxScore > 0) {
       setList((prev) => [...prev, currentData as Criteria]);
-      setCurrentData({ minScore: 1, maxScore: maxScore });
+      setCurrentData({ minScore: 0, maxScore: maxScore });
     }
   };
 
